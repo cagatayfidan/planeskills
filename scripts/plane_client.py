@@ -81,6 +81,7 @@ class PlaneClient:
         req.add_header("X-API-Key", self.api_key)
         req.add_header("Content-Type", "application/json")
         req.add_header("Accept", "application/json")
+        req.add_header("User-Agent", "plane-client/1.0")
 
         try:
             with urllib.request.urlopen(req) as resp:
@@ -95,6 +96,9 @@ class PlaneClient:
             raise RuntimeError(f"Network error reaching {url}: {e.reason}") from None
 
     # ---------------- Discovery / listing ----------------
+
+    def list_workspaces(self) -> Any:
+        return self._request("GET", "/workspaces/")
 
     def list_projects(self, workspace_slug: str) -> Any:
         return self._request("GET", f"/workspaces/{workspace_slug}/projects/")
@@ -235,6 +239,18 @@ def _split_csv(value: Optional[str]) -> Optional[list]:
     return [v.strip() for v in value.split(",") if v.strip()]
 
 
+def _cmd_list_workspaces(client: PlaneClient, args: argparse.Namespace) -> None:
+    data = client.list_workspaces()
+    items = data.get("results") if isinstance(data, dict) else data
+    if not items:
+        print("(no workspaces)", file=sys.stderr)
+        return
+    for w in items:
+        print(
+            f"{w.get('id', '')}\t{w.get('slug', '')}\t{w.get('name', '')}"
+        )
+
+
 def _cmd_list_projects(client: PlaneClient, args: argparse.Namespace) -> None:
     data = client.list_projects(args.workspace)
     # Plane paginates with {"results": [...]} on list endpoints.
@@ -301,6 +317,8 @@ def build_parser() -> argparse.ArgumentParser:
         description="Plane Cloud API client — list projects/metadata and create work items."
     )
     sub = p.add_subparsers(dest="cmd", required=True)
+
+    sub.add_parser("list-workspaces", help="List all workspaces")
 
     lp = sub.add_parser("list-projects", help="List projects in a workspace")
     lp.add_argument("workspace", help="workspace_slug, e.g. 'my-team'")
@@ -389,6 +407,7 @@ def main(argv: Optional[list] = None) -> int:
         return 2
 
     handlers = {
+        "list-workspaces": _cmd_list_workspaces,
         "list-projects": _cmd_list_projects,
         "list-metadata": _cmd_list_metadata,
         "list-work-items": _cmd_list_work_items,
