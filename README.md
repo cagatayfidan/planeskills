@@ -48,7 +48,13 @@ Otherwise the skill defaults to `https://api.plane.so/api/v1`.
 
 ### Claude Code
 
-Clone this repo into your skills directory:
+Run the following command to install the skill:
+
+```bash
+npx skills add cagatayfidan/planeskill
+```
+
+Or clone this repo into your skills directory manually:
 
 ```bash
 git clone https://github.com/<your-username>/plane-task-creator.git ~/.claude/skills/plane-task-creator
