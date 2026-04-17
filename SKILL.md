@@ -16,6 +16,17 @@ Plane's API takes **UUIDs** for almost everything — `state`, `assignees`, `lab
 
 A bundled Python client (`scripts/plane_client.py`, stdlib-only — no `pip install` needed) handles the HTTP plumbing so neither you nor the user has to rewrite curl invocations every time.
 
+## Session Initialization
+
+At the **start of every session**, before creating any tasks, you must ask the user:
+
+1. **Workspace slug** — e.g. `my-team` from the URL `app.plane.so/my-team/...`
+2. **Project/Board name** — the display name or identifier (like "Engineering" or "ENG")
+
+If the user provides a Plane URL, you can extract both from it. Otherwise, after they give you the workspace, list projects to let them pick one. Store these for the session and use them for all subsequent task operations.
+
+Once initialized, you can proceed with task creation. Re-confirm with the user if they mention a different project mid-session.
+
 ## Credentials
 
 The script reads two environment variables:
