@@ -62,6 +62,19 @@ git clone https://github.com/<your-username>/plane-task-creator.git ~/.claude/sk
 
 Claude Code picks it up automatically in the current session.
 
+## Session workflow
+
+When you first ask the skill to do something (like creating a task or listing projects), the skill will:
+
+1. **Ask for your workspace slug** — the segment in your Plane URL after the domain (e.g., `app.plane.so/YOUR-WORKSPACE/...`)
+2. **Remember it for the session** — the workspace is stored in memory and reused for all subsequent requests
+
+The workspace is only needed once per session. After that, you can simply refer to projects, and the skill will use the stored workspace to make API calls.
+
+Example:
+- First request: *"Create a task called My Task in Engineering"* → Skill asks: "What's your workspace slug?"
+- Subsequent requests: *"Add another task in the same project"* → Uses the stored workspace automatically
+
 ## Usage
 
 Once enabled and the API key is set, just ask Claude in natural language:
